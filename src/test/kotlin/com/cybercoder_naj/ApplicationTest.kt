@@ -1,22 +1,23 @@
 package com.cybercoder_naj
 
 import com.cybercoder_naj.plugins.configureRouting
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
+import com.cybercoder_naj.plugins.configureSerialization
+import io.ktor.client.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.testing.*
-import kotlin.test.Test
-import kotlin.test.assertEquals
 
-class ApplicationTest {
-//    @Test
-//    fun testRoot() = testApplication {
-//        application {
-//            configureRouting()
-//        }
-//        client.get("/").apply {
-//            assertEquals(HttpStatusCode.OK, status)
-//            assertEquals("Hello World!", bodyAsText())
-//        }
-//    }
+fun testEnvironment(block: suspend ApplicationTestBuilder.(HttpClient) -> Unit) = testApplication {
+    application {
+        configureSerialization()
+        configureRouting()
+    }
+
+    val client = createClient {
+        install(ContentNegotiation) {
+            json()
+        }
+    }
+
+    block(client)
 }

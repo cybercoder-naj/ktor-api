@@ -1,35 +1,15 @@
 package com.cybercoder_naj.routes
 
 import com.cybercoder_naj.models.Customer
-import com.cybercoder_naj.plugins.configureRouting
-import com.cybercoder_naj.plugins.configureSerialization
-import io.ktor.client.*
+import com.cybercoder_naj.testEnvironment
 import io.ktor.client.call.*
-import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.testing.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class CustomerRoutesTest {
-
-    private fun testEnvironment(block: suspend ApplicationTestBuilder.(HttpClient) -> Unit) = testApplication {
-        application {
-            configureSerialization()
-            configureRouting()
-        }
-
-        val client = createClient {
-            install(ContentNegotiation) {
-                json()
-            }
-        }
-
-        block(client)
-    }
 
     @Test
     fun `adding new customer`() = testEnvironment {
@@ -48,10 +28,12 @@ class CustomerRoutesTest {
             contentType(ContentType.Application.Json)
             setBody(Customer("300", "Mary", "Smith", "mary.smith@company.com"))
         }.apply {
-            assertEquals(mutableListOf(
-                Customer("100", "Jane", "Smith", "jane.smith@company.com"),
-                Customer("300", "Mary", "Smith", "mary.smith@company.com")
-            ), body())
+            assertEquals(
+                mutableListOf(
+                    Customer("100", "Jane", "Smith", "jane.smith@company.com"),
+                    Customer("300", "Mary", "Smith", "mary.smith@company.com")
+                ), body()
+            )
             assertEquals(HttpStatusCode.Created, status)
         }
     }
